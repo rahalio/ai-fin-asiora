@@ -1,0 +1,653 @@
+openapi: 3.0.3
+info:
+  title: Asiora
+  version: 0.1.0
+  description: >-
+    Southeast Asia FSI multi-vertical transformation portfolio across AI ops, insurance scenarios, AM diligence, and RE data plays.
+  x-product-slug: ai-fin-asiora
+  x-source: ai-in-financial/sea-fsi-fsireview-issue-19/
+servers:
+  - url: https://api.example.com
+tags:
+  - name: Initiatives
+    description: Multi-vertical initiative inventory
+  - name: Scenarios
+    description: Insurance scenario postures
+  - name: Diligence
+    description: AM diligence and integration gates
+  - name: Alliances
+    description: Data alliance risk scores
+  - name: Gates
+    description: Talent and ethics gates
+  - name: Decisions
+    description: Funding decision ledger
+  - name: Intakes
+    description: Festival idea intake
+  - name: Packs
+    description: Board heatmap packs
+paths:
+  /v1/initiatives:
+    get:
+      operationId: listAsioraInitiatives
+      tags: [Initiatives]
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: vertical
+          in: query
+          schema: { type: string, enum: [aiOps, insurance, assetManagement, realEstate] }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListEnvelopeInitiative"
+    post:
+      operationId: createAsioraInitiative
+      tags: [Initiatives]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InitiativeCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataEnvelopeInitiative"
+  /v1/initiatives/{initiativeId}:
+    parameters:
+      - $ref: "#/components/parameters/InitiativeId"
+    get:
+      operationId: getAsioraInitiative
+      tags: [Initiatives]
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataEnvelopeInitiative"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /v1/initiatives/{initiativeId}/scenario:
+    parameters:
+      - $ref: "#/components/parameters/InitiativeId"
+    put:
+      operationId: setInsuranceScenario
+      tags: [Scenarios]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScenarioPosture"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataEnvelopeInitiative"
+  /v1/initiatives/{initiativeId}/diligence:
+    parameters:
+      - $ref: "#/components/parameters/InitiativeId"
+    put:
+      operationId: upsertDiligence
+      tags: [Diligence]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DiligenceChecklist"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataEnvelopeDiligenceChecklist"
+  /v1/alliances:
+    get:
+      operationId: listAllianceScores
+      tags: [Alliances]
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListEnvelopeAllianceScore"
+    post:
+      operationId: createAllianceScore
+      tags: [Alliances]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AllianceScoreCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataEnvelopeAllianceScore"
+  /v1/gates/talent:
+    post:
+      operationId: evaluateTalentGate
+      tags: [Gates]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TalentGateEval"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataEnvelopeTalentGate"
+  /v1/gates/ethics:
+    post:
+      operationId: raiseEthicsFlag
+      tags: [Gates]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EthicsFlagCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataEnvelopeEthicsFlag"
+  /v1/decisions:
+    get:
+      operationId: listFundingDecisions
+      tags: [Decisions]
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListEnvelopeFundingDecision"
+    post:
+      operationId: recordFundingDecision
+      tags: [Decisions]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FundingDecisionCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataEnvelopeFundingDecision"
+  /v1/intakes:
+    get:
+      operationId: listIdeaIntakes
+      tags: [Intakes]
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListEnvelopeIdeaIntake"
+    post:
+      operationId: createIdeaIntake
+      tags: [Intakes]
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IdeaIntakeCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataEnvelopeIdeaIntake"
+  /v1/packs:
+    post:
+      operationId: createBoardPack
+      tags: [Packs]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BoardPackCreate"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataEnvelopeBoardPack"
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    Cursor:
+      name: cursor
+      in: query
+      schema: { type: string }
+    Limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+
+    InitiativeId:
+      name: initiativeId
+      in: path
+      required: true
+      schema: { type: string }
+
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    NotFound:
+      description: Not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    UnprocessableEntity:
+      description: Unprocessable entity
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+  schemas:
+    ResponseMeta:
+      type: object
+      required: [requestId, timestamp]
+      properties:
+        requestId: { type: string }
+        timestamp: { type: string, format: date-time }
+    Problem:
+      type: object
+      required: [type, title, status]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+
+    Initiative:
+      type: object
+      required: [id, name, vertical, status]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        vertical: { type: string, enum: [aiOps, insurance, assetManagement, realEstate] }
+        status: { type: string, enum: [intake, scored, funded, killed, scaled] }
+        insuranceScenario: { type: string, enum: [channel, machineUw, flexibleProduct, ezLife, hybrid, none] }
+        owner: { type: string }
+    InitiativeCreate:
+      type: object
+      required: [name, vertical]
+      properties:
+        name: { type: string }
+        vertical: { type: string, enum: [aiOps, insurance, assetManagement, realEstate] }
+        owner: { type: string }
+        summary: { type: string }
+    ScenarioPosture:
+      type: object
+      required: [insuranceScenario]
+      properties:
+        insuranceScenario: { type: string, enum: [channel, machineUw, flexibleProduct, ezLife, hybrid] }
+        rationale: { type: string }
+    DiligenceChecklist:
+      type: object
+      required: [initiativeId, diligenceComplete, integrationRisk]
+      properties:
+        initiativeId: { type: string }
+        diligenceComplete: { type: boolean }
+        integrationRisk: { type: string, enum: [low, medium, high] }
+        notes: { type: string }
+    AllianceScore:
+      type: object
+      required: [id, partnerName, hubPeriphery]
+      properties:
+        id: { type: string }
+        partnerName: { type: string }
+        hubPeriphery: { type: string, enum: [hub, periphery, unclear] }
+        regulatoryFeasibility: { type: string }
+        country: { type: string }
+    AllianceScoreCreate:
+      type: object
+      required: [partnerName, hubPeriphery, country]
+      properties:
+        partnerName: { type: string }
+        hubPeriphery: { type: string, enum: [hub, periphery, unclear] }
+        country: { type: string }
+        initiativeId: { type: string }
+    TalentGate:
+      type: object
+      required: [initiativeId, passed]
+      properties:
+        initiativeId: { type: string }
+        passed: { type: boolean }
+        coverageGap: { type: number }
+    TalentGateEval:
+      type: object
+      required: [initiativeId]
+      properties:
+        initiativeId: { type: string }
+        requiredRoles: { type: array, items: { type: string } }
+    EthicsFlag:
+      type: object
+      required: [id, initiativeId, status]
+      properties:
+        id: { type: string }
+        initiativeId: { type: string }
+        theme: { type: string, enum: [genomics, wellness, conduct, other] }
+        status: { type: string, enum: [open, waived, cleared] }
+    EthicsFlagCreate:
+      type: object
+      required: [initiativeId, theme]
+      properties:
+        initiativeId: { type: string }
+        theme: { type: string, enum: [genomics, wellness, conduct, other] }
+        detail: { type: string }
+    FundingDecision:
+      type: object
+      required: [id, initiativeId, outcome]
+      properties:
+        id: { type: string }
+        initiativeId: { type: string }
+        outcome: { type: string, enum: [fund, kill, scale, pause] }
+        rationale: { type: string }
+        decidedAt: { type: string, format: date-time }
+    FundingDecisionCreate:
+      type: object
+      required: [initiativeId, outcome]
+      properties:
+        initiativeId: { type: string }
+        outcome: { type: string, enum: [fund, kill, scale, pause] }
+        rationale: { type: string }
+    IdeaIntake:
+      type: object
+      required: [id, title, status]
+      properties:
+        id: { type: string }
+        title: { type: string }
+        source: { type: string }
+        status: { type: string, enum: [new, owned, converted, expired] }
+        owner: { type: string }
+        slaDueAt: { type: string, format: date-time }
+    IdeaIntakeCreate:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string }
+        source: { type: string }
+        notes: { type: string }
+    BoardPack:
+      type: object
+      required: [id, status]
+      properties:
+        id: { type: string }
+        status: { type: string, enum: [draft, published] }
+        periodLabel: { type: string }
+        downloadUri: { type: string, format: uri }
+    BoardPackCreate:
+      type: object
+      required: [periodLabel]
+      properties:
+        periodLabel: { type: string }
+
+    DataEnvelopeInitiative:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          $ref: "#/components/schemas/Initiative"
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+    ListEnvelopeInitiative:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/Initiative"
+            nextCursor: { type: string }
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+
+    DataEnvelopeDiligenceChecklist:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          $ref: "#/components/schemas/DiligenceChecklist"
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+    ListEnvelopeDiligenceChecklist:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/DiligenceChecklist"
+            nextCursor: { type: string }
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+
+    DataEnvelopeAllianceScore:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          $ref: "#/components/schemas/AllianceScore"
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+    ListEnvelopeAllianceScore:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/AllianceScore"
+            nextCursor: { type: string }
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+
+    DataEnvelopeTalentGate:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          $ref: "#/components/schemas/TalentGate"
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+    ListEnvelopeTalentGate:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/TalentGate"
+            nextCursor: { type: string }
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+
+    DataEnvelopeEthicsFlag:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          $ref: "#/components/schemas/EthicsFlag"
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+    ListEnvelopeEthicsFlag:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/EthicsFlag"
+            nextCursor: { type: string }
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+
+    DataEnvelopeFundingDecision:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          $ref: "#/components/schemas/FundingDecision"
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+    ListEnvelopeFundingDecision:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/FundingDecision"
+            nextCursor: { type: string }
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+
+    DataEnvelopeIdeaIntake:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          $ref: "#/components/schemas/IdeaIntake"
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+    ListEnvelopeIdeaIntake:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/IdeaIntake"
+            nextCursor: { type: string }
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+
+    DataEnvelopeBoardPack:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          $ref: "#/components/schemas/BoardPack"
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+    ListEnvelopeBoardPack:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/BoardPack"
+            nextCursor: { type: string }
+        meta:
+          $ref: "#/components/schemas/ResponseMeta"
+
