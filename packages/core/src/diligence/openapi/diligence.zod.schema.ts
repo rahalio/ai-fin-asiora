@@ -1,0 +1,402 @@
+import { makeApi, Zodios, type ZodiosOptions } from '@zodios/core';
+import { z } from 'zod';
+
+const upsertDiligence_Body = z
+  .object({
+    diligenceComplete: z.boolean(),
+    integrationRisk: z.enum(['low', 'medium', 'high']),
+    processReady: z.boolean().optional(),
+    controlsReady: z.boolean().optional(),
+    dataReady: z.boolean().optional(),
+    metricsReady: z.boolean().optional(),
+    talentReady: z.boolean().optional(),
+    orgReady: z.boolean().optional(),
+    notes: z.string().optional(),
+    waived: z.boolean().optional(),
+    waiverRationale: z.string().optional(),
+  })
+  .passthrough();
+const Problem = z
+  .object({
+    type: z.string().url(),
+    title: z.string(),
+    status: z.number().int(),
+    detail: z.string(),
+    instance: z.string().url(),
+    code: z.string(),
+  })
+  .partial()
+  .passthrough();
+const DiligenceId = z.string();
+const IntegrationRisk = z.enum(['low', 'medium', 'high']);
+const DiligenceChecklist = z
+  .object({
+    id: z.string().regex(/^dil_[0-9A-HJKMNP-TV-Z]{26}$/),
+    initiativeId: z.string().regex(/^ini_[0-9A-HJKMNP-TV-Z]{26}$/),
+    diligenceComplete: z.boolean(),
+    integrationRisk: z.enum(['low', 'medium', 'high']),
+    processReady: z.boolean().optional(),
+    controlsReady: z.boolean().optional(),
+    dataReady: z.boolean().optional(),
+    metricsReady: z.boolean().optional(),
+    talentReady: z.boolean().optional(),
+    orgReady: z.boolean().optional(),
+    notes: z.string().optional(),
+    waived: z.boolean().optional(),
+    waiverRationale: z.string().optional(),
+    updatedAt: z.string().datetime({ offset: true }).optional(),
+  })
+  .passthrough();
+const ResponseMeta = z
+  .object({
+    requestId: z.string().uuid(),
+    correlationId: z.string(),
+    generatedAt: z.string().datetime({ offset: true }),
+  })
+  .partial()
+  .passthrough();
+const DiligenceListResponse = z
+  .object({
+    data: z
+      .object({
+        items: z.array(
+          z
+            .object({
+              id: z.string().regex(/^dil_[0-9A-HJKMNP-TV-Z]{26}$/),
+              initiativeId: z.string().regex(/^ini_[0-9A-HJKMNP-TV-Z]{26}$/),
+              diligenceComplete: z.boolean(),
+              integrationRisk: z.enum(['low', 'medium', 'high']),
+              processReady: z.boolean().optional(),
+              controlsReady: z.boolean().optional(),
+              dataReady: z.boolean().optional(),
+              metricsReady: z.boolean().optional(),
+              talentReady: z.boolean().optional(),
+              orgReady: z.boolean().optional(),
+              notes: z.string().optional(),
+              waived: z.boolean().optional(),
+              waiverRationale: z.string().optional(),
+              updatedAt: z.string().datetime({ offset: true }).optional(),
+            })
+            .passthrough()
+        ),
+        nextCursor: z.string().optional(),
+      })
+      .passthrough(),
+    meta: z
+      .object({
+        requestId: z.string().uuid(),
+        correlationId: z.string(),
+        generatedAt: z.string().datetime({ offset: true }),
+      })
+      .partial()
+      .passthrough()
+      .optional(),
+  })
+  .passthrough();
+const DiligenceResponse = z
+  .object({
+    data: z
+      .object({
+        id: z.string().regex(/^dil_[0-9A-HJKMNP-TV-Z]{26}$/),
+        initiativeId: z.string().regex(/^ini_[0-9A-HJKMNP-TV-Z]{26}$/),
+        diligenceComplete: z.boolean(),
+        integrationRisk: z.enum(['low', 'medium', 'high']),
+        processReady: z.boolean().optional(),
+        controlsReady: z.boolean().optional(),
+        dataReady: z.boolean().optional(),
+        metricsReady: z.boolean().optional(),
+        talentReady: z.boolean().optional(),
+        orgReady: z.boolean().optional(),
+        notes: z.string().optional(),
+        waived: z.boolean().optional(),
+        waiverRationale: z.string().optional(),
+        updatedAt: z.string().datetime({ offset: true }).optional(),
+      })
+      .passthrough(),
+    meta: z
+      .object({
+        requestId: z.string().uuid(),
+        correlationId: z.string(),
+        generatedAt: z.string().datetime({ offset: true }),
+      })
+      .partial()
+      .passthrough()
+      .optional(),
+  })
+  .passthrough();
+const DiligenceUpsert = z
+  .object({
+    diligenceComplete: z.boolean(),
+    integrationRisk: z.enum(['low', 'medium', 'high']),
+    processReady: z.boolean().optional(),
+    controlsReady: z.boolean().optional(),
+    dataReady: z.boolean().optional(),
+    metricsReady: z.boolean().optional(),
+    talentReady: z.boolean().optional(),
+    orgReady: z.boolean().optional(),
+    notes: z.string().optional(),
+    waived: z.boolean().optional(),
+    waiverRationale: z.string().optional(),
+  })
+  .passthrough();
+
+export const schemas: any = {
+  upsertDiligence_Body,
+  Problem,
+  DiligenceId,
+  IntegrationRisk,
+  DiligenceChecklist,
+  ResponseMeta,
+  DiligenceListResponse,
+  DiligenceResponse,
+  DiligenceUpsert,
+};
+
+const endpoints = makeApi([
+  {
+    method: 'get',
+    path: '/v1/diligence',
+    alias: 'listDiligenceChecklists',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'cursor',
+        type: 'Query',
+        schema: z.string().optional(),
+      },
+      {
+        name: 'limit',
+        type: 'Query',
+        schema: z.number().int().gte(1).lte(200).optional().default(50),
+      },
+      {
+        name: 'incompleteOnly',
+        type: 'Query',
+        schema: z.boolean().optional(),
+      },
+    ],
+    response: z
+      .object({
+        data: z
+          .object({
+            items: z.array(
+              z
+                .object({
+                  id: z.string().regex(/^dil_[0-9A-HJKMNP-TV-Z]{26}$/),
+                  initiativeId: z
+                    .string()
+                    .regex(/^ini_[0-9A-HJKMNP-TV-Z]{26}$/),
+                  diligenceComplete: z.boolean(),
+                  integrationRisk: z.enum(['low', 'medium', 'high']),
+                  processReady: z.boolean().optional(),
+                  controlsReady: z.boolean().optional(),
+                  dataReady: z.boolean().optional(),
+                  metricsReady: z.boolean().optional(),
+                  talentReady: z.boolean().optional(),
+                  orgReady: z.boolean().optional(),
+                  notes: z.string().optional(),
+                  waived: z.boolean().optional(),
+                  waiverRationale: z.string().optional(),
+                  updatedAt: z.string().datetime({ offset: true }).optional(),
+                })
+                .passthrough()
+            ),
+            nextCursor: z.string().optional(),
+          })
+          .passthrough(),
+        meta: z
+          .object({
+            requestId: z.string().uuid(),
+            correlationId: z.string(),
+            generatedAt: z.string().datetime({ offset: true }),
+          })
+          .partial()
+          .passthrough()
+          .optional(),
+      })
+      .passthrough(),
+    errors: [
+      {
+        status: 401,
+        description: `Missing or invalid API key`,
+        schema: z
+          .object({
+            type: z.string().url(),
+            title: z.string(),
+            status: z.number().int(),
+            detail: z.string(),
+            instance: z.string().url(),
+            code: z.string(),
+          })
+          .partial()
+          .passthrough(),
+      },
+    ],
+  },
+  {
+    method: 'get',
+    path: '/v1/initiatives/:initiativeId/diligence',
+    alias: 'getDiligence',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'initiativeId',
+        type: 'Path',
+        schema: z.string().regex(/^ini_[0-9A-HJKMNP-TV-Z]{26}$/),
+      },
+    ],
+    response: z
+      .object({
+        data: z
+          .object({
+            id: z.string().regex(/^dil_[0-9A-HJKMNP-TV-Z]{26}$/),
+            initiativeId: z.string().regex(/^ini_[0-9A-HJKMNP-TV-Z]{26}$/),
+            diligenceComplete: z.boolean(),
+            integrationRisk: z.enum(['low', 'medium', 'high']),
+            processReady: z.boolean().optional(),
+            controlsReady: z.boolean().optional(),
+            dataReady: z.boolean().optional(),
+            metricsReady: z.boolean().optional(),
+            talentReady: z.boolean().optional(),
+            orgReady: z.boolean().optional(),
+            notes: z.string().optional(),
+            waived: z.boolean().optional(),
+            waiverRationale: z.string().optional(),
+            updatedAt: z.string().datetime({ offset: true }).optional(),
+          })
+          .passthrough(),
+        meta: z
+          .object({
+            requestId: z.string().uuid(),
+            correlationId: z.string(),
+            generatedAt: z.string().datetime({ offset: true }),
+          })
+          .partial()
+          .passthrough()
+          .optional(),
+      })
+      .passthrough(),
+    errors: [
+      {
+        status: 401,
+        description: `Missing or invalid API key`,
+        schema: z
+          .object({
+            type: z.string().url(),
+            title: z.string(),
+            status: z.number().int(),
+            detail: z.string(),
+            instance: z.string().url(),
+            code: z.string(),
+          })
+          .partial()
+          .passthrough(),
+      },
+      {
+        status: 404,
+        description: `Resource not found`,
+        schema: z
+          .object({
+            type: z.string().url(),
+            title: z.string(),
+            status: z.number().int(),
+            detail: z.string(),
+            instance: z.string().url(),
+            code: z.string(),
+          })
+          .partial()
+          .passthrough(),
+      },
+    ],
+  },
+  {
+    method: 'put',
+    path: '/v1/initiatives/:initiativeId/diligence',
+    alias: 'upsertDiligence',
+    requestFormat: 'json',
+    parameters: [
+      {
+        name: 'body',
+        type: 'Body',
+        schema: upsertDiligence_Body,
+      },
+      {
+        name: 'initiativeId',
+        type: 'Path',
+        schema: z.string().regex(/^ini_[0-9A-HJKMNP-TV-Z]{26}$/),
+      },
+    ],
+    response: z
+      .object({
+        data: z
+          .object({
+            id: z.string().regex(/^dil_[0-9A-HJKMNP-TV-Z]{26}$/),
+            initiativeId: z.string().regex(/^ini_[0-9A-HJKMNP-TV-Z]{26}$/),
+            diligenceComplete: z.boolean(),
+            integrationRisk: z.enum(['low', 'medium', 'high']),
+            processReady: z.boolean().optional(),
+            controlsReady: z.boolean().optional(),
+            dataReady: z.boolean().optional(),
+            metricsReady: z.boolean().optional(),
+            talentReady: z.boolean().optional(),
+            orgReady: z.boolean().optional(),
+            notes: z.string().optional(),
+            waived: z.boolean().optional(),
+            waiverRationale: z.string().optional(),
+            updatedAt: z.string().datetime({ offset: true }).optional(),
+          })
+          .passthrough(),
+        meta: z
+          .object({
+            requestId: z.string().uuid(),
+            correlationId: z.string(),
+            generatedAt: z.string().datetime({ offset: true }),
+          })
+          .partial()
+          .passthrough()
+          .optional(),
+      })
+      .passthrough(),
+    errors: [
+      {
+        status: 401,
+        description: `Missing or invalid API key`,
+        schema: z
+          .object({
+            type: z.string().url(),
+            title: z.string(),
+            status: z.number().int(),
+            detail: z.string(),
+            instance: z.string().url(),
+            code: z.string(),
+          })
+          .partial()
+          .passthrough(),
+      },
+      {
+        status: 404,
+        description: `Resource not found`,
+        schema: z
+          .object({
+            type: z.string().url(),
+            title: z.string(),
+            status: z.number().int(),
+            detail: z.string(),
+            instance: z.string().url(),
+            code: z.string(),
+          })
+          .partial()
+          .passthrough(),
+      },
+    ],
+  },
+]);
+
+export const api: any = new Zodios(
+  'https://api.ddd-codegen-starter.local/v1',
+  endpoints
+);
+
+export function createApiClient(baseUrl: string, options?: ZodiosOptions): any {
+  return new Zodios(baseUrl, endpoints, options);
+}

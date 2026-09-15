@@ -1,0 +1,93 @@
+openapi: 3.1.0
+info:
+  title: Overlaps schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    OverlapId:
+      type: string
+      pattern: '^ovl_[0-9A-HJKMNP-TV-Z]{26}$'
+    OverlapStatus:
+      type: string
+      enum: [open, merged, split, resolved]
+    OverlapCluster:
+      type: object
+      required: [id, title, status, memberInitiativeIds]
+      properties:
+        id:
+          $ref: '#/components/schemas/OverlapId'
+        title:
+          type: string
+        status:
+          $ref: '#/components/schemas/OverlapStatus'
+        memberInitiativeIds:
+          type: array
+          items:
+            type: string
+            pattern: '^ini_[0-9A-HJKMNP-TV-Z]{26}$'
+        customerOutcome:
+          type: string
+        capitalAtRisk:
+          type: string
+        differentiationNotes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        resolvedAt:
+          type: string
+          format: date-time
+    OverlapClusterCreate:
+      type: object
+      required: [title, memberInitiativeIds]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        memberInitiativeIds:
+          type: array
+          minItems: 2
+          items:
+            type: string
+        customerOutcome:
+          type: string
+        capitalAtRisk:
+          type: string
+    OverlapResolve:
+      type: object
+      required: [resolution]
+      properties:
+        resolution:
+          type: string
+          enum: [merged, split, resolved]
+        differentiationNotes:
+          type: string
+        killInitiativeIds:
+          type: array
+          items:
+            type: string
+    OverlapClusterResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/OverlapCluster'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+    OverlapClusterListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/OverlapCluster'
+            nextCursor:
+              type: string
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta

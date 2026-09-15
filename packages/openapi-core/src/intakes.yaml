@@ -1,0 +1,183 @@
+openapi: 3.1.0
+info:
+  title: Asiora Intakes API
+  version: 0.1.0
+  description: |
+    Festival idea intake with SLA (BR-10).
+  license:
+    name: Proprietary
+    url: https://asiora.local/license
+  x-domain: int
+servers:
+  - url: https://api.asiora.local
+    description: Local / Asiora API
+security:
+  - apiKey: []
+
+tags:
+  - name: Intakes
+    description: Festival idea intake
+paths:
+  /v1/intakes:
+    get:
+      operationId: listIdeaIntakes
+      tags: [Intakes]
+      summary: List idea intakes
+      parameters:
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - name: status
+          in: query
+          schema:
+            $ref: ./intakes.schemas.yaml#/components/schemas/IntakeStatus
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./intakes.schemas.yaml#/components/schemas/IdeaIntakeListResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+    post:
+      operationId: createIdeaIntake
+      tags: [Intakes]
+      summary: Capture festival/external idea
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/IdempotencyKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./intakes.schemas.yaml#/components/schemas/IdeaIntakeCreate
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: ./intakes.schemas.yaml#/components/schemas/IdeaIntakeResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+  /v1/intakes/{intakeId}:
+    parameters:
+      - name: intakeId
+        in: path
+        required: true
+        schema:
+          $ref: ./intakes.schemas.yaml#/components/schemas/IntakeId
+    get:
+      operationId: getIdeaIntake
+      tags: [Intakes]
+      summary: Get idea intake
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./intakes.schemas.yaml#/components/schemas/IdeaIntakeResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+  /v1/intakes/{intakeId}/assign:
+    parameters:
+      - name: intakeId
+        in: path
+        required: true
+        schema:
+          $ref: ./intakes.schemas.yaml#/components/schemas/IntakeId
+    post:
+      operationId: assignIdeaIntake
+      tags: [Intakes]
+      summary: Assign owner within SLA
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./intakes.schemas.yaml#/components/schemas/IntakeAssign
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./intakes.schemas.yaml#/components/schemas/IdeaIntakeResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+  /v1/intakes/{intakeId}/convert:
+    parameters:
+      - name: intakeId
+        in: path
+        required: true
+        schema:
+          $ref: ./intakes.schemas.yaml#/components/schemas/IntakeId
+    post:
+      operationId: convertIdeaIntake
+      tags: [Intakes]
+      summary: Convert intake to initiative
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./intakes.schemas.yaml#/components/schemas/IntakeConvert
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./intakes.schemas.yaml#/components/schemas/IdeaIntakeResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+  /v1/intakes/{intakeId}/expire:
+    parameters:
+      - name: intakeId
+        in: path
+        required: true
+        schema:
+          $ref: ./intakes.schemas.yaml#/components/schemas/IntakeId
+    post:
+      operationId: expireIdeaIntake
+      tags: [Intakes]
+      summary: Expire intake past SLA
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./intakes.schemas.yaml#/components/schemas/IdeaIntakeResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+
+components:
+  securitySchemes:
+    apiKey:
+      $ref: ./common/security.yaml#/components/securitySchemes/apiKey

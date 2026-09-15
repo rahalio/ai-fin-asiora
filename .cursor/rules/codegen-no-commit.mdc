@@ -1,0 +1,12 @@
+---
+description: Never commit or push the .codegen directory
+globs:
+  - .codegen/**/*
+alwaysApply: true
+---
+
+# `.codegen` must not be committed
+
+- **Never** add, commit, or push `.codegen/`, `codegen/`, or `**/zero_codegen/` to GitHub.
+- The zero-codegen Python tool is local-only. Restore by copying from `zero-apps-codegen-scaffold/.codegen/` if missing.
+- Keep `.codegen/` in `.gitignore`. Bundled OpenAPI under `packages/openapi-core/src/.bundled/` stays gitignored and is regenerated with `pnpm bundle:openapi`.

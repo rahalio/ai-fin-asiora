@@ -1,0 +1,75 @@
+openapi: 3.1.0
+info:
+  title: Packs schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    PackId:
+      type: string
+      pattern: '^pck_[0-9A-HJKMNP-TV-Z]{26}$'
+    PackStatus:
+      type: string
+      enum: [draft, published]
+    BoardPack:
+      type: object
+      required: [id, status, periodLabel]
+      properties:
+        id:
+          $ref: '#/components/schemas/PackId'
+        status:
+          $ref: '#/components/schemas/PackStatus'
+        periodLabel:
+          type: string
+        downloadUri:
+          type: string
+          format: uri
+        initiativeIds:
+          type: array
+          items:
+            type: string
+        summary:
+          type: string
+        publishedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+    BoardPackCreate:
+      type: object
+      required: [periodLabel]
+      properties:
+        periodLabel:
+          type: string
+          minLength: 1
+        initiativeIds:
+          type: array
+          items:
+            type: string
+        summary:
+          type: string
+    BoardPackResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/BoardPack'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+    BoardPackListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/BoardPack'
+            nextCursor:
+              type: string
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta

@@ -1,0 +1,128 @@
+openapi: 3.1.0
+info:
+  title: Asiora Initiatives API
+  version: 0.1.0
+  description: |
+    Multi-vertical initiative inventory (BR-1, BR-8).
+  license:
+    name: Proprietary
+    url: https://asiora.local/license
+  x-domain: ini
+servers:
+  - url: https://api.asiora.local
+    description: Local / Asiora API
+security:
+  - apiKey: []
+
+tags:
+  - name: Initiatives
+    description: Multi-vertical initiative inventory
+paths:
+  /v1/initiatives:
+    get:
+      operationId: listInitiatives
+      tags: [Initiatives]
+      summary: List initiatives
+      parameters:
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - name: vertical
+          in: query
+          schema:
+            $ref: ./initiatives.schemas.yaml#/components/schemas/Vertical
+        - name: status
+          in: query
+          schema:
+            $ref: ./initiatives.schemas.yaml#/components/schemas/InitiativeStatus
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./initiatives.schemas.yaml#/components/schemas/InitiativeListResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+    post:
+      operationId: createInitiative
+      tags: [Initiatives]
+      summary: Create initiative
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/IdempotencyKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./initiatives.schemas.yaml#/components/schemas/InitiativeCreate
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: ./initiatives.schemas.yaml#/components/schemas/InitiativeResponse
+        '400':
+          $ref: ./common/responses.yaml#/components/responses/BadRequest
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+  /v1/initiatives/{initiativeId}:
+    parameters:
+      - name: initiativeId
+        in: path
+        required: true
+        schema:
+          $ref: ./initiatives.schemas.yaml#/components/schemas/InitiativeId
+    get:
+      operationId: getInitiative
+      tags: [Initiatives]
+      summary: Get initiative
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./initiatives.schemas.yaml#/components/schemas/InitiativeResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+    patch:
+      operationId: updateInitiative
+      tags: [Initiatives]
+      summary: Update initiative
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./initiatives.schemas.yaml#/components/schemas/InitiativeUpdate
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./initiatives.schemas.yaml#/components/schemas/InitiativeResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+
+components:
+  securitySchemes:
+    apiKey:
+      $ref: ./common/security.yaml#/components/securitySchemes/apiKey

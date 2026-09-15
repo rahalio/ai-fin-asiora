@@ -1,0 +1,66 @@
+openapi: 3.1.0
+info:
+  title: Decisions schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    DecisionId:
+      type: string
+      pattern: '^dcs_[0-9A-HJKMNP-TV-Z]{26}$'
+    FundingOutcome:
+      type: string
+      enum: [fund, kill, scale, pause]
+    FundingDecision:
+      type: object
+      required: [id, initiativeId, outcome]
+      properties:
+        id:
+          $ref: '#/components/schemas/DecisionId'
+        initiativeId:
+          type: string
+          pattern: '^ini_[0-9A-HJKMNP-TV-Z]{26}$'
+        outcome:
+          $ref: '#/components/schemas/FundingOutcome'
+        rationale:
+          type: string
+        decidedAt:
+          type: string
+          format: date-time
+        decidedBy:
+          type: string
+    FundingDecisionCreate:
+      type: object
+      required: [initiativeId, outcome]
+      properties:
+        initiativeId:
+          type: string
+          pattern: '^ini_[0-9A-HJKMNP-TV-Z]{26}$'
+        outcome:
+          $ref: '#/components/schemas/FundingOutcome'
+        rationale:
+          type: string
+    FundingDecisionResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/FundingDecision'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+    FundingDecisionListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/FundingDecision'
+            nextCursor:
+              type: string
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta

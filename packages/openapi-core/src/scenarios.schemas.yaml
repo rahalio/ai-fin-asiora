@@ -1,0 +1,63 @@
+openapi: 3.1.0
+info:
+  title: Scenarios schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    ScenarioPostureId:
+      type: string
+      pattern: '^scn_[0-9A-HJKMNP-TV-Z]{26}$'
+    InsuranceScenarioChoice:
+      type: string
+      enum: [channel, machineUw, flexibleProduct, ezLife, hybrid]
+    ScenarioPosture:
+      type: object
+      required: [id, initiativeId, insuranceScenario]
+      properties:
+        id:
+          $ref: '#/components/schemas/ScenarioPostureId'
+        initiativeId:
+          type: string
+          pattern: '^ini_[0-9A-HJKMNP-TV-Z]{26}$'
+        insuranceScenario:
+          $ref: '#/components/schemas/InsuranceScenarioChoice'
+        rationale:
+          type: string
+        setAt:
+          type: string
+          format: date-time
+        setBy:
+          type: string
+    ScenarioPostureSet:
+      type: object
+      required: [insuranceScenario]
+      properties:
+        insuranceScenario:
+          $ref: '#/components/schemas/InsuranceScenarioChoice'
+        rationale:
+          type: string
+    ScenarioPostureResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/ScenarioPosture'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+    ScenarioPostureListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScenarioPosture'
+            nextCursor:
+              type: string
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta

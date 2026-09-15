@@ -1,0 +1,18 @@
+{
+  "name": "@asiora/openapi-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "OpenAPI contracts for Asiora (common + identity + product domains)",
+  "scripts": {
+    "lint:domains": "redocly lint",
+    "bundle:domains": "mkdir -p src/.bundled && redocly bundle identity --output src/.bundled/identity.openapi.yaml && redocly bundle identity --output src/.bundled/identity.json && redocly bundle initiatives --output src/.bundled/initiatives.openapi.yaml && redocly bundle initiatives --output src/.bundled/initiatives.json && redocly bundle scenarios --output src/.bundled/scenarios.openapi.yaml && redocly bundle scenarios --output src/.bundled/scenarios.json && redocly bundle diligence --output src/.bundled/diligence.openapi.yaml && redocly bundle diligence --output src/.bundled/diligence.json && redocly bundle alliances --output src/.bundled/alliances.openapi.yaml && redocly bundle alliances --output src/.bundled/alliances.json && redocly bundle gates --output src/.bundled/gates.openapi.yaml && redocly bundle gates --output src/.bundled/gates.json && redocly bundle decisions --output src/.bundled/decisions.openapi.yaml && redocly bundle decisions --output src/.bundled/decisions.json && redocly bundle intakes --output src/.bundled/intakes.openapi.yaml && redocly bundle intakes --output src/.bundled/intakes.json && redocly bundle packs --output src/.bundled/packs.openapi.yaml && redocly bundle packs --output src/.bundled/packs.json && redocly bundle dataplay --output src/.bundled/dataplay.openapi.yaml && redocly bundle dataplay --output src/.bundled/dataplay.json && redocly bundle overlaps --output src/.bundled/overlaps.openapi.yaml && redocly bundle overlaps --output src/.bundled/overlaps.json",
+    "lint": "pnpm run lint:domains",
+    "bundle": "pnpm run bundle:domains"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^1.34.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

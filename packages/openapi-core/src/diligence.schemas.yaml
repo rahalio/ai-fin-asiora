@@ -1,0 +1,97 @@
+openapi: 3.1.0
+info:
+  title: Diligence schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    DiligenceId:
+      type: string
+      pattern: '^dil_[0-9A-HJKMNP-TV-Z]{26}$'
+    IntegrationRisk:
+      type: string
+      enum: [low, medium, high]
+    DiligenceChecklist:
+      type: object
+      required: [id, initiativeId, diligenceComplete, integrationRisk]
+      properties:
+        id:
+          $ref: '#/components/schemas/DiligenceId'
+        initiativeId:
+          type: string
+          pattern: '^ini_[0-9A-HJKMNP-TV-Z]{26}$'
+        diligenceComplete:
+          type: boolean
+        integrationRisk:
+          $ref: '#/components/schemas/IntegrationRisk'
+        processReady:
+          type: boolean
+        controlsReady:
+          type: boolean
+        dataReady:
+          type: boolean
+        metricsReady:
+          type: boolean
+        talentReady:
+          type: boolean
+        orgReady:
+          type: boolean
+        notes:
+          type: string
+        waived:
+          type: boolean
+        waiverRationale:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+    DiligenceUpsert:
+      type: object
+      required: [diligenceComplete, integrationRisk]
+      properties:
+        diligenceComplete:
+          type: boolean
+        integrationRisk:
+          $ref: '#/components/schemas/IntegrationRisk'
+        processReady:
+          type: boolean
+        controlsReady:
+          type: boolean
+        dataReady:
+          type: boolean
+        metricsReady:
+          type: boolean
+        talentReady:
+          type: boolean
+        orgReady:
+          type: boolean
+        notes:
+          type: string
+        waived:
+          type: boolean
+        waiverRationale:
+          type: string
+    DiligenceResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/DiligenceChecklist'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+    DiligenceListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/DiligenceChecklist'
+            nextCursor:
+              type: string
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta

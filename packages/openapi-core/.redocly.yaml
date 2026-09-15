@@ -1,0 +1,40 @@
+apis:
+  identity:
+    root: src/identity.yaml
+  initiatives:
+    root: src/initiatives.yaml
+  scenarios:
+    root: src/scenarios.yaml
+  diligence:
+    root: src/diligence.yaml
+  alliances:
+    root: src/alliances.yaml
+  gates:
+    root: src/gates.yaml
+  decisions:
+    root: src/decisions.yaml
+  intakes:
+    root: src/intakes.yaml
+  packs:
+    root: src/packs.yaml
+  dataplay:
+    root: src/dataplay.yaml
+  overlaps:
+    root: src/overlaps.yaml
+
+extends:
+  - recommended
+
+rules:
+  no-unused-components: off
+  operation-4xx-response: warn
+  info-license: off
+  info-license-url: off
+  tag-description: off
+  operation-operationId: error
+  no-invalid-media-type-examples: off
+
+theme:
+  openapi:
+    generateCodeSamples:
+      languages: []

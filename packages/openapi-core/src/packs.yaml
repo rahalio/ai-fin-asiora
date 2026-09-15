@@ -1,0 +1,123 @@
+openapi: 3.1.0
+info:
+  title: Asiora Packs API
+  version: 0.1.0
+  description: |
+    Multi-vertical board heatmap packs (BR-11).
+  license:
+    name: Proprietary
+    url: https://asiora.local/license
+  x-domain: pck
+servers:
+  - url: https://api.asiora.local
+    description: Local / Asiora API
+security:
+  - apiKey: []
+
+tags:
+  - name: Packs
+    description: Board heatmap packs
+paths:
+  /v1/packs:
+    get:
+      operationId: listBoardPacks
+      tags: [Packs]
+      summary: List board packs
+      parameters:
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - name: status
+          in: query
+          schema:
+            $ref: ./packs.schemas.yaml#/components/schemas/PackStatus
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./packs.schemas.yaml#/components/schemas/BoardPackListResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+    post:
+      operationId: createBoardPack
+      tags: [Packs]
+      summary: Create draft board pack
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/IdempotencyKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./packs.schemas.yaml#/components/schemas/BoardPackCreate
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: ./packs.schemas.yaml#/components/schemas/BoardPackResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+  /v1/packs/{packId}:
+    parameters:
+      - name: packId
+        in: path
+        required: true
+        schema:
+          $ref: ./packs.schemas.yaml#/components/schemas/PackId
+    get:
+      operationId: getBoardPack
+      tags: [Packs]
+      summary: Get board pack
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./packs.schemas.yaml#/components/schemas/BoardPackResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+  /v1/packs/{packId}/publish:
+    parameters:
+      - name: packId
+        in: path
+        required: true
+        schema:
+          $ref: ./packs.schemas.yaml#/components/schemas/PackId
+    post:
+      operationId: publishBoardPack
+      tags: [Packs]
+      summary: Publish board pack
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./packs.schemas.yaml#/components/schemas/BoardPackResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+
+components:
+  securitySchemes:
+    apiKey:
+      $ref: ./common/security.yaml#/components/securitySchemes/apiKey

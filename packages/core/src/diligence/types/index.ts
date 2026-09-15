@@ -1,0 +1,66 @@
+/**
+ * Diligence Domain Types
+ *
+ * Auto-generated from OpenAPI spec
+ * Generator: types-generator v2.0.0
+ *
+ * This file re-exports types from generated OpenAPI types and adds
+ * convenient type aliases for handlers (response types, etc.)
+ *
+ * ⚠️ DO NOT EDIT MANUALLY - this file is auto-generated
+ */
+
+import type { components, operations } from "../openapi/diligence.openapi.types";
+
+// ============================================================================
+// Re-export all generated types
+// ============================================================================
+// Note: components and operations are exported here but should be accessed via namespace
+// in main index.ts to avoid duplicate export errors (e.g., blockchain.types.components)
+
+export type { components, operations };
+
+
+// ============================================================================
+// Convenient Type Aliases for Schemas
+// ============================================================================
+
+export type DiligenceChecklist = components["schemas"]["DiligenceChecklist"];
+export type DiligenceId = components["schemas"]["DiligenceId"];
+export type DiligenceUpsert = components["schemas"]["DiligenceUpsert"];
+export type IntegrationRisk = components["schemas"]["IntegrationRisk"];
+export type Diligence = components["schemas"]["DiligenceResponse"];
+
+
+// ============================================================================
+// Operation Input Types (Request Bodies)
+// ============================================================================
+
+// These types represent the input data for create/update operations
+
+export type UpsertDiligenceRequestInput = NonNullable<operations["upsertDiligence"]["requestBody"]>["content"]["application/json"];
+
+
+// ============================================================================
+// Operation Parameter Types (Query/Path Parameters)
+// ============================================================================
+
+// These types represent parameters for operations without request bodies.
+// Aligned with get_input_schema_or_type_name for consistent naming across generators.
+
+export type ListDiligenceChecklistsParams = NonNullable<operations["listDiligenceChecklists"]["parameters"]["query"]>;
+export type GetDiligenceParams = operations["getDiligence"]["parameters"]["path"];
+export type UpsertDiligenceParams = operations["upsertDiligence"]["parameters"]["path"];
+
+
+// ============================================================================
+// Operation Response Types
+// ============================================================================
+
+// These types are used by handlers for type-safe response envelopes
+
+export type ListDiligenceChecklistsResponse = operations["listDiligenceChecklists"]["responses"]["200"]["content"]["application/json"];
+export type GetDiligenceResponse = operations["getDiligence"]["responses"]["200"]["content"]["application/json"];
+export type UpsertDiligenceResponse = operations["upsertDiligence"]["responses"]["200"]["content"]["application/json"];
+
+

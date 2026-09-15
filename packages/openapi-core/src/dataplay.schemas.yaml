@@ -1,0 +1,114 @@
+openapi: 3.1.0
+info:
+  title: DataPlay schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    DataPlayId:
+      type: string
+      pattern: '^dpl_[0-9A-HJKMNP-TV-Z]{26}$'
+    CountryConstraint:
+      type: object
+      required: [country, localisationOk, consentBasis]
+      properties:
+        country:
+          type: string
+        localisationOk:
+          type: boolean
+        consentBasis:
+          type: string
+        notes:
+          type: string
+    DataPlay:
+      type: object
+      required: [id, name, initiativeId]
+      properties:
+        id:
+          $ref: '#/components/schemas/DataPlayId'
+        name:
+          type: string
+        initiativeId:
+          type: string
+          pattern: '^ini_[0-9A-HJKMNP-TV-Z]{26}$'
+        dataSources:
+          type: array
+          items:
+            type: string
+        monetisationHypothesis:
+          type: string
+        crossSellAllowed:
+          type: boolean
+        countryConstraints:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountryConstraint'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    DataPlayCreate:
+      type: object
+      required: [name, initiativeId]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        initiativeId:
+          type: string
+          pattern: '^ini_[0-9A-HJKMNP-TV-Z]{26}$'
+        dataSources:
+          type: array
+          items:
+            type: string
+        monetisationHypothesis:
+          type: string
+        crossSellAllowed:
+          type: boolean
+        countryConstraints:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountryConstraint'
+    DataPlayUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        dataSources:
+          type: array
+          items:
+            type: string
+        monetisationHypothesis:
+          type: string
+        crossSellAllowed:
+          type: boolean
+        countryConstraints:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountryConstraint'
+    DataPlayResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/DataPlay'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+    DataPlayListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/DataPlay'
+            nextCursor:
+              type: string
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta

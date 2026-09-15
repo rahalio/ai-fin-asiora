@@ -1,0 +1,130 @@
+openapi: 3.1.0
+info:
+  title: Initiatives schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    InitiativeId:
+      type: string
+      pattern: '^ini_[0-9A-HJKMNP-TV-Z]{26}$'
+    Vertical:
+      type: string
+      enum: [aiOps, insurance, assetManagement, realEstate]
+    InitiativeStatus:
+      type: string
+      enum: [intake, scored, funded, killed, scaled]
+    InsuranceScenario:
+      type: string
+      enum: [channel, machineUw, flexibleProduct, ezLife, hybrid, none]
+    GovernanceMode:
+      type: string
+      enum: [consortium, unilateral, unset]
+    Initiative:
+      type: object
+      required: [id, name, vertical, status]
+      properties:
+        id:
+          $ref: '#/components/schemas/InitiativeId'
+        name:
+          type: string
+        vertical:
+          $ref: '#/components/schemas/Vertical'
+        status:
+          $ref: '#/components/schemas/InitiativeStatus'
+        insuranceScenario:
+          $ref: '#/components/schemas/InsuranceScenario'
+        owner:
+          type: string
+        summary:
+          type: string
+        countries:
+          type: array
+          items:
+            type: string
+        crossVerticalDeps:
+          type: array
+          items:
+            $ref: '#/components/schemas/InitiativeId'
+        governanceMode:
+          $ref: '#/components/schemas/GovernanceMode'
+        consortiumNotes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    InitiativeCreate:
+      type: object
+      required: [name, vertical]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        vertical:
+          $ref: '#/components/schemas/Vertical'
+        owner:
+          type: string
+        summary:
+          type: string
+        countries:
+          type: array
+          items:
+            type: string
+        crossVerticalDeps:
+          type: array
+          items:
+            type: string
+        governanceMode:
+          $ref: '#/components/schemas/GovernanceMode'
+        consortiumNotes:
+          type: string
+    InitiativeUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        owner:
+          type: string
+        summary:
+          type: string
+        status:
+          $ref: '#/components/schemas/InitiativeStatus'
+        countries:
+          type: array
+          items:
+            type: string
+        crossVerticalDeps:
+          type: array
+          items:
+            type: string
+        governanceMode:
+          $ref: '#/components/schemas/GovernanceMode'
+        consortiumNotes:
+          type: string
+    InitiativeResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/Initiative'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+    InitiativeListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/Initiative'
+            nextCursor:
+              type: string
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta

@@ -1,0 +1,75 @@
+openapi: 3.1.0
+info:
+  title: Alliances schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    AllianceId:
+      type: string
+      pattern: '^aln_[0-9A-HJKMNP-TV-Z]{26}$'
+    HubPeriphery:
+      type: string
+      enum: [hub, periphery, unclear]
+    AllianceScore:
+      type: object
+      required: [id, partnerName, hubPeriphery, country]
+      properties:
+        id:
+          $ref: '#/components/schemas/AllianceId'
+        partnerName:
+          type: string
+        hubPeriphery:
+          $ref: '#/components/schemas/HubPeriphery'
+        regulatoryFeasibility:
+          type: string
+        country:
+          type: string
+        initiativeId:
+          type: string
+          pattern: '^ini_[0-9A-HJKMNP-TV-Z]{26}$'
+        mitigation:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    AllianceScoreCreate:
+      type: object
+      required: [partnerName, hubPeriphery, country]
+      properties:
+        partnerName:
+          type: string
+        hubPeriphery:
+          $ref: '#/components/schemas/HubPeriphery'
+        country:
+          type: string
+        initiativeId:
+          type: string
+        regulatoryFeasibility:
+          type: string
+        mitigation:
+          type: string
+    AllianceScoreResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/AllianceScore'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+    AllianceScoreListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/AllianceScore'
+            nextCursor:
+              type: string
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta

@@ -1,0 +1,121 @@
+openapi: 3.1.0
+info:
+  title: Asiora DataPlay API
+  version: 0.1.0
+  description: |
+    RE data play register with country localisation (BR-4).
+  license:
+    name: Proprietary
+    url: https://asiora.local/license
+  x-domain: dpl
+servers:
+  - url: https://api.asiora.local
+    description: Local / Asiora API
+security:
+  - apiKey: []
+
+tags:
+  - name: DataPlays
+    description: RE data play register
+paths:
+  /v1/data-plays:
+    get:
+      operationId: listDataPlays
+      tags: [DataPlays]
+      summary: List data plays
+      parameters:
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - name: initiativeId
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./dataplay.schemas.yaml#/components/schemas/DataPlayListResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+    post:
+      operationId: createDataPlay
+      tags: [DataPlays]
+      summary: Register RE data play
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/IdempotencyKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./dataplay.schemas.yaml#/components/schemas/DataPlayCreate
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: ./dataplay.schemas.yaml#/components/schemas/DataPlayResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+  /v1/data-plays/{dataPlayId}:
+    parameters:
+      - name: dataPlayId
+        in: path
+        required: true
+        schema:
+          $ref: ./dataplay.schemas.yaml#/components/schemas/DataPlayId
+    get:
+      operationId: getDataPlay
+      tags: [DataPlays]
+      summary: Get data play
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./dataplay.schemas.yaml#/components/schemas/DataPlayResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+    patch:
+      operationId: updateDataPlay
+      tags: [DataPlays]
+      summary: Update data play / country matrix
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./dataplay.schemas.yaml#/components/schemas/DataPlayUpdate
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./dataplay.schemas.yaml#/components/schemas/DataPlayResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+
+components:
+  securitySchemes:
+    apiKey:
+      $ref: ./common/security.yaml#/components/securitySchemes/apiKey

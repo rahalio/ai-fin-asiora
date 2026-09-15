@@ -1,0 +1,91 @@
+openapi: 3.1.0
+info:
+  title: Intakes schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    IntakeId:
+      type: string
+      pattern: '^int_[0-9A-HJKMNP-TV-Z]{26}$'
+    IntakeStatus:
+      type: string
+      enum: [new, owned, converted, expired]
+    IdeaIntake:
+      type: object
+      required: [id, title, status]
+      properties:
+        id:
+          $ref: '#/components/schemas/IntakeId'
+        title:
+          type: string
+        source:
+          type: string
+        status:
+          $ref: '#/components/schemas/IntakeStatus'
+        owner:
+          type: string
+        notes:
+          type: string
+        slaDueAt:
+          type: string
+          format: date-time
+        convertedInitiativeId:
+          type: string
+          pattern: '^ini_[0-9A-HJKMNP-TV-Z]{26}$'
+        createdAt:
+          type: string
+          format: date-time
+    IdeaIntakeCreate:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        source:
+          type: string
+        notes:
+          type: string
+    IntakeAssign:
+      type: object
+      required: [owner]
+      properties:
+        owner:
+          type: string
+          minLength: 1
+    IntakeConvert:
+      type: object
+      required: [vertical]
+      properties:
+        vertical:
+          type: string
+          enum: [aiOps, insurance, assetManagement, realEstate]
+        name:
+          type: string
+        owner:
+          type: string
+    IdeaIntakeResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/IdeaIntake'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+    IdeaIntakeListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/IdeaIntake'
+            nextCursor:
+              type: string
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta

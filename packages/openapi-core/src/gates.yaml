@@ -1,0 +1,152 @@
+openapi: 3.1.0
+info:
+  title: Asiora Gates API
+  version: 0.1.0
+  description: |
+    Talent and ethics gates (BR-6, BR-7).
+  license:
+    name: Proprietary
+    url: https://asiora.local/license
+  x-domain: gat
+servers:
+  - url: https://api.asiora.local
+    description: Local / Asiora API
+security:
+  - apiKey: []
+
+tags:
+  - name: Gates
+    description: Talent and ethics gates
+paths:
+  /v1/gates/talent:
+    get:
+      operationId: listTalentGates
+      tags: [Gates]
+      summary: List talent gate evaluations
+      parameters:
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - name: failedOnly
+          in: query
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./gates.schemas.yaml#/components/schemas/TalentGateListResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+    post:
+      operationId: evaluateTalentGate
+      tags: [Gates]
+      summary: Evaluate talent gate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./gates.schemas.yaml#/components/schemas/TalentGateEval
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./gates.schemas.yaml#/components/schemas/TalentGateResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+  /v1/gates/ethics:
+    get:
+      operationId: listEthicsFlags
+      tags: [Gates]
+      summary: List ethics flags
+      parameters:
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - name: status
+          in: query
+          schema:
+            $ref: ./gates.schemas.yaml#/components/schemas/EthicsStatus
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./gates.schemas.yaml#/components/schemas/EthicsFlagListResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+    post:
+      operationId: raiseEthicsFlag
+      tags: [Gates]
+      summary: Raise ethics flag
+      parameters:
+        - $ref: ./common/parameters.yaml#/components/parameters/IdempotencyKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./gates.schemas.yaml#/components/schemas/EthicsFlagCreate
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: ./gates.schemas.yaml#/components/schemas/EthicsFlagResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+  /v1/gates/ethics/{ethicsFlagId}/waiver:
+    parameters:
+      - name: ethicsFlagId
+        in: path
+        required: true
+        schema:
+          $ref: ./gates.schemas.yaml#/components/schemas/EthicsFlagId
+    post:
+      operationId: waiveEthicsFlag
+      tags: [Gates]
+      summary: Record ethics waiver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./gates.schemas.yaml#/components/schemas/EthicsWaiver
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./gates.schemas.yaml#/components/schemas/EthicsFlagResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+
+components:
+  securitySchemes:
+    apiKey:
+      $ref: ./common/security.yaml#/components/securitySchemes/apiKey

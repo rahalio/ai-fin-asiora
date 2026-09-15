@@ -1,0 +1,138 @@
+openapi: 3.1.0
+info:
+  title: Gates schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    TalentGateId:
+      type: string
+      pattern: '^gat_[0-9A-HJKMNP-TV-Z]{26}$'
+    EthicsFlagId:
+      type: string
+      pattern: '^gat_[0-9A-HJKMNP-TV-Z]{26}$'
+    EthicsTheme:
+      type: string
+      enum: [genomics, wellness, conduct, other]
+    EthicsStatus:
+      type: string
+      enum: [open, waived, cleared]
+    TalentGate:
+      type: object
+      required: [id, initiativeId, passed]
+      properties:
+        id:
+          $ref: '#/components/schemas/TalentGateId'
+        initiativeId:
+          type: string
+          pattern: '^ini_[0-9A-HJKMNP-TV-Z]{26}$'
+        passed:
+          type: boolean
+        coverageGap:
+          type: number
+        requiredRoles:
+          type: array
+          items:
+            type: string
+        evaluatedAt:
+          type: string
+          format: date-time
+    TalentGateEval:
+      type: object
+      required: [initiativeId]
+      properties:
+        initiativeId:
+          type: string
+          pattern: '^ini_[0-9A-HJKMNP-TV-Z]{26}$'
+        requiredRoles:
+          type: array
+          items:
+            type: string
+        coverageGap:
+          type: number
+    EthicsFlag:
+      type: object
+      required: [id, initiativeId, theme, status]
+      properties:
+        id:
+          $ref: '#/components/schemas/EthicsFlagId'
+        initiativeId:
+          type: string
+          pattern: '^ini_[0-9A-HJKMNP-TV-Z]{26}$'
+        theme:
+          $ref: '#/components/schemas/EthicsTheme'
+        status:
+          $ref: '#/components/schemas/EthicsStatus'
+        detail:
+          type: string
+        waiverRationale:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    EthicsFlagCreate:
+      type: object
+      required: [initiativeId, theme]
+      properties:
+        initiativeId:
+          type: string
+          pattern: '^ini_[0-9A-HJKMNP-TV-Z]{26}$'
+        theme:
+          $ref: '#/components/schemas/EthicsTheme'
+        detail:
+          type: string
+    EthicsWaiver:
+      type: object
+      required: [waiverRationale]
+      properties:
+        waiverRationale:
+          type: string
+          minLength: 1
+    TalentGateResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/TalentGate'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+    TalentGateListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/TalentGate'
+            nextCursor:
+              type: string
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+    EthicsFlagResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/EthicsFlag'
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta
+    EthicsFlagListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/EthicsFlag'
+            nextCursor:
+              type: string
+        meta:
+          $ref: ./common/envelopes.yaml#/components/schemas/ResponseMeta

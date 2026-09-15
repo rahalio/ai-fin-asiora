@@ -1,0 +1,101 @@
+openapi: 3.1.0
+info:
+  title: Asiora Scenarios API
+  version: 0.1.0
+  description: |
+    Insurance scenario postures (BR-2).
+  license:
+    name: Proprietary
+    url: https://asiora.local/license
+  x-domain: scn
+servers:
+  - url: https://api.asiora.local
+    description: Local / Asiora API
+security:
+  - apiKey: []
+
+tags:
+  - name: Scenarios
+    description: Insurance scenario postures
+paths:
+  /v1/scenarios:
+    get:
+      operationId: listScenarioPostures
+      tags: [Scenarios]
+      summary: List scenario postures
+      parameters:
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - name: unposturedOnly
+          in: query
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./scenarios.schemas.yaml#/components/schemas/ScenarioPostureListResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+  /v1/initiatives/{initiativeId}/scenario:
+    parameters:
+      - name: initiativeId
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^ini_[0-9A-HJKMNP-TV-Z]{26}$'
+    get:
+      operationId: getInitiativeScenario
+      tags: [Scenarios]
+      summary: Get insurance scenario for initiative
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./scenarios.schemas.yaml#/components/schemas/ScenarioPostureResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+    put:
+      operationId: setInsuranceScenario
+      tags: [Scenarios]
+      summary: Set insurance scenario posture
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./scenarios.schemas.yaml#/components/schemas/ScenarioPostureSet
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./scenarios.schemas.yaml#/components/schemas/ScenarioPostureResponse
+        '401':
+          $ref: ./common/responses.yaml#/components/responses/Unauthorized
+        '404':
+          $ref: ./common/responses.yaml#/components/responses/NotFound
+        '422':
+          $ref: ./common/responses.yaml#/components/responses/UnprocessableEntity
+        default:
+          $ref: ./common/responses.yaml#/components/responses/Problem
+
+components:
+  securitySchemes:
+    apiKey:
+      $ref: ./common/security.yaml#/components/securitySchemes/apiKey
